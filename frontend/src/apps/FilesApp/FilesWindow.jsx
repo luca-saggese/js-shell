@@ -1,3 +1,8 @@
+// TODO: add drop upload
+// https://www.npmjs.com/package/react-dropzone-uploader
+
+
+
 import React, { Component } from 'react';
 import Window from 'components/Desktop/Window';
 // import IFrame from 'components/IFrame';

@@ -1,6 +1,6 @@
 import React from 'react';
 import registerApp from 'utils/desktop/registerApp';
-import FileManager from './FilesWindow';
+import FilesWindow from './FilesWindow';
 import config from 'config';
 
 export default registerApp({
@@ -8,7 +8,7 @@ export default registerApp({
   title: 'Files',
   mainView: (props) => {
     return (
-      <FileManager {...props} />
+      <FilesWindow {...props} />
     );
   },
   iconSrc: `${config.HOST_ICON_URI_PREFIX}folder/folder.svg`
