@@ -3,6 +3,10 @@
 // TODO: Add badge capability to Dock icons
 // https://ant.design/components/badge/#header
 
+
+// TODO: add magnification
+// https://github.com/lukehorvat/react-osx-dock
+
 import React, { Component } from 'react';
 
 import hocConnect from 'state/hocConnect';
@@ -37,7 +41,7 @@ class Dock extends Component {
               if (!iconSrc) {
                 return null;
               }
-              
+
               return (
                 <DockItem  
                   appRegistration={appRegistration}
