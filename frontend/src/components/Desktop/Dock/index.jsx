@@ -16,7 +16,7 @@ import DockItem from './DockItem';
 import './style.css';
 
 class Dock extends Component {
-  
+
 
   render() {
     // TODO: Rename to appRegistrations
@@ -43,7 +43,7 @@ class Dock extends Component {
               }
 
               return (
-                <DockItem  
+                <DockItem
                   appRegistration={appRegistration}
                   key={idx}
                 />

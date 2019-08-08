@@ -5,7 +5,7 @@ import './style.css';
 import './style-scrollbar.css';
 
 import React, { Component } from 'react';
-import Fullscreen from "react-full-screen";
+import Fullscreen from 'react-full-screen';
 import Panel from './Panel';
 import Dock from './Dock';
 import Notifications from './Notifications';
@@ -29,9 +29,6 @@ import 'apps/defaultApps';
 import $ from 'jquery';
 
 class Desktop extends Component {
-  state={
-    isFull: false
-  }
   componentDidMount() {
     this._handleFocusUpdate();
   }
@@ -52,14 +49,16 @@ class Desktop extends Component {
         $body.removeClass('blur');
       }
     }
-  }
+  };
 
   render() {
+    const { isFullScreenRequested } = this.props;
+
     return (
       <div ref={c => this._el = c}>
         <Fullscreen
-          enabled={this.state.isFull}
-          onChange={isFull => this.setState({isFull})}
+          enabled={isFullScreenRequested}
+          // onChange={isFullScreenRequested => this.setState({isFullScreenRequested})}
         >
           <FullViewport>
 
@@ -76,7 +75,7 @@ class Desktop extends Component {
                   {
                     // Top Panel
                   }
-                  <Panel onFullScreenToggle={()=>this.setState({isFull:!this.state.isFull})} />
+                  <Panel />
 
                   <Notifications />
 
@@ -124,12 +123,16 @@ class Desktop extends Component {
 }
 
 export default hocConnect(Desktop, DesktopLinkedState, (updatedState) => {
-  const { isFocused } = updatedState;
+  const { isFocused, isFullScreenRequested } = updatedState;
 
   let filteredState = {};
 
   if (typeof isFocused !== 'undefined') {
     filteredState.isFocused = isFocused;
+  }
+
+  if (typeof isFullScreenRequested !== 'undefined') {
+    filteredState.isFullScreenRequested = isFullScreenRequested;
   }
 
   if (Object.keys(filteredState).length) {

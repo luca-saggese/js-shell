@@ -10,14 +10,13 @@
 import './FilesApp';
 // import './HelloWorldApp';
 import './UserProfileApp';
-import './P2PConnectionApp';
+import './P2PConnectionsApp';
 import './VoiceInputApp';
 import './ScreenRecorderApp';
 import './MediaPlayerApp';
 import './SystemDetailApp';
-import './DocsApp';
 import './CalculatorApp';
-import './SettingsApp';
+// import './SettingsApp';
 import './SourceCodeApp';
 import './TextEditorApp';
 import './TerminalApp';
@@ -26,6 +25,5 @@ import './TerminalApp';
 
 
 // import './WindowManagerApp';
-// import './DocsApp';
 // import './AboutApp';
 // import './ProcessTesterApp';

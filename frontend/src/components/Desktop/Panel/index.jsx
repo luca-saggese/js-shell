@@ -1,34 +1,31 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Menubar from '../Menubar';
+import Time from './Time';
 import { Icon, /*Menu, Dropdown*/ } from 'antd';
 import SocketLinkedState from 'state/SocketLinkedState';
+import DesktopLinkedState from 'state/DesktopLinkedState';
+
 import hocConnect from 'state/hocConnect';
 import './style.css';
 
-const days=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-
-
 class Panel extends Component {
-  state={clock:''}
-
-
-  componentDidMount(){
-    const self=this;
-    setInterval(()=>{
-      const now = new Date();
-      self.setState({ clock: days[now.getDay()] + ' ' + now.getHours() + ':' + now.getMinutes() })
-      }, 1000);
-  }
-
   _onFullScreenToggle() {
-    if(typeof this.props.onFullScreenToggle !== 'undefined') {
-      this.props.onFullScreenToggle()
-    }
+    const { isFullScreenRequested, desktopLinkedState } = this.props;
+
+    desktopLinkedState.setState({
+      isFullScreenRequested: !isFullScreenRequested
+    });
   }
 
   render() {
-    const {activeWindow, className, isConnected, ...propsRest} = this.props;
+    const {
+      activeWindow,
+      className,
+      isConnected,
+      isFullScreenRequested,
+      desktopLinkedState,
+      ...propsRest
+    } = this.props;
 
     return (
       <div
@@ -42,22 +39,25 @@ class Panel extends Component {
         <div className="zd-desktop-panel-column-right">
           <button>
             {
+              // TODO: Replace w/ icon
               ((isConnected) => {
                 return `[ ${!isConnected ? 'no ' : ''}signal ]`;
               })(isConnected)
             }
           </button>
-          
-          {this.state.clock}
-          
+
+          <Time />
+
           <button>
-            <Icon type="search" style={{padding: 0, margin: 0, verticalAlign: 'middle'}} />
+            <Icon type="search" style={{ padding: 0, margin: 0, verticalAlign: 'middle' }} />
           </button>
+
           <button onClick={this._onFullScreenToggle.bind(this)}>
             <Icon type="fullscreen" style={{padding: 0, margin: 0, verticalAlign: 'middle'}} />
           </button>
+          
           <button>
-            <Icon type="menu-unfold" style={{padding: 0, margin: 0, verticalAlign: 'middle'}} />
+            <Icon type="menu-unfold" style={{ padding: 0, margin: 0, verticalAlign: 'middle' }} />
           </button>
         </div>
       </div>
@@ -65,10 +65,28 @@ class Panel extends Component {
   }
 }
 
-export default hocConnect(Panel, SocketLinkedState, (updatedState, socketState) => {
-  const { isConnected } = socketState.getState();
+const SocketLinkedStatePanel = hocConnect(Panel, SocketLinkedState, (updatedState) => {
+  const { isConnected } = updatedState;
 
-  return {
-    isConnected
-  };
+  if (typeof isConnected !== 'undefined') {
+    return {
+      isConnected
+    };
+  }
 });
+
+const DesktopLinkedStatePanel = hocConnect(SocketLinkedStatePanel, DesktopLinkedState, (updatedState, desktopLinkedState) => {
+  const { isFullScreenRequested } = updatedState;
+
+  const filteredState = {};
+
+  if (typeof isFullScreenRequested !== 'undefined') {
+    filteredState.isFullScreenRequested = isFullScreenRequested;
+  }
+
+  return {...filteredState, ...{
+    desktopLinkedState
+  }};
+});
+
+export default DesktopLinkedStatePanel;

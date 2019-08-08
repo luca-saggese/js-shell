@@ -19,10 +19,11 @@ import Center from 'components/Center';
 import Cover from 'components/Cover';
 import IFrame from 'components/IFrame';
 import Window from 'components/Desktop/Window';
-import socketQuery from 'utils/socketQuery';
+import socketAPIQuery from 'utils/socketAPI/socketAPIQuery';
+import SocketChannel from 'shared/socketAPI/SocketChannel';
 
 // Note: Currently commented-out due to inconsistent exports
-// import socketAPIRoutes from 'utils/socketAPIRoutes';
+// import socketAPIRoutes from 'shared/socketAPI/socketAPIRoutes';
 // import socketAPIEvents from 'utils/socketAPIEvents';
 
 import beep from 'utils/audio/beep';
@@ -50,6 +51,7 @@ class UI_JITRuntime extends ClientJITRuntime {
       React,
       Component,      
       CPUThreadTimer,
+      SocketChannel,
 
       // (e.g. reference this.zdComponents in evaluated scripting)
       components: {
@@ -66,7 +68,7 @@ class UI_JITRuntime extends ClientJITRuntime {
         },
         getLogicalProcessors,
         getPrototypeChain,
-        socketQuery,
+        socketAPIQuery,
         // socketAPIRoutes,
         // socketAPIEvents
       }

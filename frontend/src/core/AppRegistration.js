@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import AppRuntime from './AppRuntime';
 import AppRegistryLinkedState from 'state/AppRegistryLinkedState';
 import DesktopLinkedState from 'state/DesktopLinkedState';
-import { EVT_EXIT /*, EVT_WINDOW_RESIZE*/} from 'process/ClientProcess';
+import { EVT_EXIT } from 'process/ClientProcess';
 import './AppRuntime.typedef';
 
 const commonDesktopLinkedState = new DesktopLinkedState();
@@ -35,27 +35,29 @@ class AppRegistration extends EventEmitter {
     super();
 
     const {
-        title,
-        iconSrc,
-        mainView,
-        cmd: appCmd,
-        supportedMimes,
-        menuItems,
-        allowMultipleWindows,
+      title,
+      iconSrc,
+      mainView,
+      cmd: appCmd,
+      supportedMimes,
+      menuItems,
+      allowMultipleWindows,
     } = runProps;
 
     this._isLaunched = false;
-    this._appRuntime = [];
+    this._appRuntimes = [];
 
     this._title = title;
     this._iconSrc = iconSrc;
     this._mainView = mainView;
     this._appCmd = appCmd;
 
-    this._menuItems = menuItems;
+    // TODO: Handle accordingly
+    this._menuItems = menuItems || [];
 
-    this._position = {x: 0, y: 0};
-    this._size = {width: 0, height: 0};
+    // Previous position and size
+    this._lastPosition = { x: 0, y: 0 };
+    this._lastSize = { width: 0, height: 0 };
 
     this._isUnregistered = false;
     this._supportedMimes = supportedMimes || [];
@@ -66,49 +68,58 @@ class AppRegistration extends EventEmitter {
     commonAppRegistryLinkedState.addAppRegistration(this);
   }
 
-  async launchApp(cmdArguments) {
+  /**
+   * TODO: Document
+   */
+  async launchApp(cmdArguments = null) {
     try {
-      if (this._appRuntime.length && !this._allowMultipleWindows) {
+      if (this._appRuntimes.length && !this._allowMultipleWindows) {
         // Gracefully fail
         console.warn('App is already launched, or is launching');
         return;
       }
 
-      if(this._position.x === 0 && this._position.y === 0 ){
-        this._position = {x: _createdWindowsCount*20, y: _createdWindowsCount*20}
+      // Set positioning
+      // TODO: Fix https://github.com/zenOSmosis/js-shell/issues/11
+      if (this._lastPosition.x === 0 && this._lastPosition.y === 0) {
+        this._lastPosition = { x: _createdWindowsCount * 20, y: _createdWindowsCount * 20 }
       }
-      _createdWindowsCount++;
-      
+      ++_createdWindowsCount;
+
       const appRuntime = new AppRuntime({
         title: this._title,
         iconSrc: this._iconSrc,
         mainView: this._mainView,
         appCmd: this._appCmd,
-        position: this._position,
-        size: this._size,
+        position: this._lastPosition,
+        size: this._lastSize,
         menuItems: this._menuItems,
         cmdArguments
       });
-  
-      const self = this;
+
       // Handle cleanup when the app exits
       appRuntime.on(EVT_EXIT, () => {
-        // save last position / size
-        console.log('getInitPosition', self._position)
-        self._position = appRuntime.getInitPosition();
-        console.log('getInitPosition', self._position)
-        self._size = appRuntime.getInitSize();
-        self._isLaunched = false;
-        // CHECK: remove correct appruntime
-        self._appRuntime = self._appRuntime.filter(a=>(a!==appRuntime)) ;
-        // Emit to listeners that the app is closed
-        commonAppRegistryLinkedState.emitRegistrationsUpdate();
+        // Retain position and size for next open
+        this._lastPosition = appRuntime.getInitPosition();
+        this._lastSize = appRuntime.getInitSize();
+
+        this._isLaunched = false;
+
+        // Remove this appRuntime instance
+        this._appRuntimes = this._appRuntimes.filter(a => {
+          return !Object.is(a, appRuntime);
+        });
+
+        if (!this._appRuntimes.length) {
+          // Emit to listeners that the app is closed
+          commonAppRegistryLinkedState.emitRegistrationsUpdate();
+        }
       });
 
       await appRuntime.onceReady();
 
-      this._appRuntime.push(appRuntime);
-  
+      this._appRuntimes.push(appRuntime);
+
       this._isLaunched = true;
 
       // Emit to listeners that the app is launched
@@ -122,33 +133,45 @@ class AppRegistration extends EventEmitter {
     return this._isLaunched;
   }
 
+  /**
+   * @return {boolean} Whether multiple instances of this View (or Window) are
+   * allowed.
+   */
   getAllowMultipleWindows() {
     return this._allowMultipleWindows;
   }
-  
+
   /**
-   * Retrieves the launched app's process runtime, if available.
+   * Retrieves the launched app's process runtimes, if available.
    * 
-   * @return {AppRuntime}
+   * @return {AppRuntime[]00}
    */
   getAppRuntimes() {
-    return this._appRuntime;
+    return this._appRuntimes;
   }
 
+  /**
+   * TODO: Document
+   */
   getSupportedMimes() {
     return this._supportedMimes;
   }
 
+  /**
+   * @return {Promise<void>}
+   */
   async closeApp() {
     try {
-      if (!this._appRuntime.length) {
+      const lenAppRuntimes = this._appRuntimes.length;
+
+      if (!lenAppRuntimes) {
         // Gracefully fail
         console.warn('appRuntime is not registered');
         return;
       }
 
-      for(let i=0; i< this._appRuntime.length; i++){
-        let appRuntime = this._appRuntime[i];
+      for (let i = 0; i < lenAppRuntimes; i++) {
+        let appRuntime = this._appRuntimes[i];
         await appRuntime.close();
       }
 
@@ -157,10 +180,16 @@ class AppRegistration extends EventEmitter {
     }
   }
 
+  /**
+   * @return {string}
+   */
   getTitle() {
     return this._title;
   }
 
+  /**
+   * Focuses all related AppRuntime instances.
+   */
   focus() {
     //focus respecting order
     const apps = commonDesktopLinkedState.getAppRuntimeFocusOrder().filter(a => (this._appRuntime.indexOf(a)>-1))
@@ -171,6 +200,7 @@ class AppRegistration extends EventEmitter {
     return this._iconSrc;
   }
 
+  // TODO: Rename
   getMainWindow() {
     return this._mainView;
   }
@@ -185,14 +215,16 @@ class AppRegistration extends EventEmitter {
     try {
       if (this.getIsLaunched()) {
         const appRuntimes = this.getAppRuntimes();
-        for(let i=0; i< appRuntimes.length; i++){
+
+        for (let i = 0; i < appRuntimes.length; i++) {
           let appRuntime = appRuntimes[i];
           await appRuntime.kill();
         }
       }
-  
+
+      // Remove from LinkedState
       commonAppRegistryLinkedState.removeAppRegistration(this);
-  
+
       this._isUnregistered = true;
     } catch (exc) {
       throw exc;
