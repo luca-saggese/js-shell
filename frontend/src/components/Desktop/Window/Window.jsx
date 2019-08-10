@@ -8,7 +8,7 @@
 import React, { Component } from 'react';
 import WindowHeader from './Header';
 // import Gesture from 'commponents/Gesture';
-import ContextMenu from 'components/ContextMenu';
+import {ContextMenu} from 'components/ContextMenu';
 import Cover from 'components/Cover';
 import DragResizable from 'components/DragResizable';
 import ErrorBoundary from 'components/ErrorBoundary';

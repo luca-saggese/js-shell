@@ -113,6 +113,10 @@ export default class FilesWindow extends Component {
     }
   }
 
+  getDownloadUrl(node) {
+    return config.HOST_FILES_URI_PREFIX + node.pathName;
+  }
+
   getAppRegistrationsByMime(mime) {
     if (!module.hot) {
       return;

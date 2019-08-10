@@ -3,6 +3,11 @@
   height: 100%;
 }
 
-.zd-context-menu-overlay {
+.zd-context-menu-overlay2 {
   position: absolute;
+  width: 200px;
+  z-index: 2;
+  border-radius: 10px;
+  border: 1px solid gray;
+  overflow: hidden;
 }

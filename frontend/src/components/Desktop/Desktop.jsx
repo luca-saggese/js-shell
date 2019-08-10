@@ -9,7 +9,7 @@ import Fullscreen from "react-full-screen";
 import Panel from './Panel';
 import Dock from './Dock';
 import Notifications from './Notifications';
-import ContextMenu from 'components/ContextMenu';
+import { ContextMenu, MenuItem } from 'components/ContextMenu';
 import FullViewport from 'components/FullViewport';
 import DesktopBackground from './DesktopBackground';
 import VersionLabel from './VersionLabel';
@@ -88,7 +88,12 @@ class Desktop extends Component {
               // <URIRedirector /> 
             }
 
-            <ContextMenu>
+            <ContextMenu
+              menuItems={[
+                <MenuItem key="1">Option 1</MenuItem>,
+                <MenuItem key="2">Option 2</MenuItem>
+              ]}
+            >
 
               <DesktopBackground ref={c => this._desktopBackground = c} className={isLoggedIn ? '' : 'blurred'} >
                 {isLoggedIn && (

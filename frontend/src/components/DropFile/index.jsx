@@ -1,3 +1,6 @@
+// TODO: file upload
+// https://malcoded.com/posts/react-file-upload/
+
 import React, { Component } from 'react'
 
 class DropFile extends Component {
