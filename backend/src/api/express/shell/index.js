@@ -34,6 +34,11 @@ function expressShell(app2) {
   const app = express();
   const expressWs = require('express-ws')(app);
 
+  const Unblocker = require('unblocker');
+
+  // run unblocker for proxify webbrowser
+  app.use(new Unblocker({prefix: '/proxy/'}));
+
   // Serve static assets from ./static
   app.use(express.static(`${__dirname}/static`));
 
@@ -55,6 +60,11 @@ function expressShell(app2) {
     });
   });
 
+  app.use(function(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+  });
+  
   // Start the application
   app.listen(3002);
 }

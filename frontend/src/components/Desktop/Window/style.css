@@ -97,6 +97,22 @@
   background-color: #5AC05A !important;
 }
 
+/*
+
+.zd-dot.yellow:hover {
+  background-color: #FDD800 !important;
+}
+
+.zd-dot.green:hover {
+  background-color: #5AC05A !important;
+}
+
+.zd-window.hide {
+  display: none;
+}
+
+*/
+
 .zd-window.hide {
   display: none;
 }

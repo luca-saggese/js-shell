@@ -256,8 +256,7 @@ export default class Window extends Component {
 
     commonDesktopLinkedState.setActiveWindow(this);
     
-    
-    
+    $(this._el).addClass(CSS_CLASS_NAME_FOCUS);
 
     this.doCoverIfShould();
 

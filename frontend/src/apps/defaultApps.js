@@ -21,6 +21,8 @@ import './SettingsApp';
 import './SourceCodeApp';
 import './TextEditorApp';
 import './TerminalApp';
+import './WebrowserApp';
+
 
 // Non-ported apps
 

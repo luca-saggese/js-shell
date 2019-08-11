@@ -12,4 +12,9 @@ process.on('unhandledRejection', (reason/*, promise*/) => {
 
 const expressServer = require('./servers/expressServer');
 
-expressServer.start();
+try {
+  expressServer.start();
+} catch (e) {
+  console.error(e)
+}
+

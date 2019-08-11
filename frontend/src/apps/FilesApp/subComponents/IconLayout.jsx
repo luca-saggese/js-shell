@@ -25,7 +25,7 @@ export default class IconLayout extends Component {
             //console.debug('child node', childNode);
             const menu = [];
             if(!childNode.isDir) {
-              menu.push(<MenuItem key="1"><a href={filesWindow.getDownloadUrl(childNode)} target="bank">Download</a></MenuItem>);
+              menu.push(<MenuItem key="1"><a href={filesWindow.getDownloadUrl(childNode)} download target="bank">Download</a></MenuItem>);
             }
             menu.push(<MenuItem key="open">Open</MenuItem>);
 
